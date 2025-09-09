@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
-import { Heart, Bot, Sparkles, Settings } from "lucide-react";
+import { Heart, Droplet, Bot, Settings, User, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 interface TabNavigationProps {
   activeTab: "blood" | "chatbot";
@@ -7,6 +9,8 @@ interface TabNavigationProps {
 }
 
 export default function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
+  const { user, signOut } = useAuth();
+  
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
@@ -80,7 +84,7 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Heart className={`w-5 h-5 transition-all duration-300 ${
+              <Droplet className={`w-5 h-5 transition-all duration-300 ${
                 activeTab === "blood" ? "fill-white" : "group-hover:text-primary"
               }`} />
               <span className="font-medium">Blood Bank</span>
@@ -133,41 +137,54 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
             </motion.button>
           </div>
 
-          {/* Enhanced User Avatar */}
-          <motion.div
-            className="relative cursor-pointer group"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <div className="w-12 h-12 gradient-healing rounded-full flex items-center justify-center relative overflow-hidden">
-              {/* Animated background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 animate-shimmer" />
-              
-              <motion.div
-                className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center relative z-10"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Sparkles className="w-4 h-4 text-white" />
-              </motion.div>
-              
-              {/* Pulse effect */}
-              <motion.div
-                className="absolute inset-0 bg-white/10 rounded-full"
-                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
+          {/* Enhanced User Avatar with Sign Out */}
+          <div className="flex items-center space-x-2">
+            <div className="relative group">
+              <div className="relative">
+                {/* Animated background */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-md"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    opacity: [0.5, 0.8, 0.5],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+                
+                <div className="relative w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                  {user?.user_metadata?.display_name?.[0]?.toUpperCase() || <User className="w-5 h-5" />}
+                </div>
+                
+                {/* Pulse effect */}
+                <motion.div
+                  className="absolute inset-0 border-2 border-primary/30 rounded-full"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.7, 0, 0.7],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+              </div>
             </div>
             
-            {/* Settings icon on hover */}
-            <motion.div
-              className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-              initial={{ scale: 0 }}
-              whileHover={{ scale: 1 }}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => signOut()}
+              className="hover:bg-destructive/10 hover:text-destructive transition-colors duration-200"
+              title="Sign out"
             >
-              <Settings className="w-3 h-3 text-white" />
-            </motion.div>
-          </motion.div>
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </motion.nav>
